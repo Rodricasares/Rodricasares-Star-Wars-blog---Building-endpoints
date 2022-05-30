@@ -9,7 +9,7 @@ from flask_swagger import swagger
 from flask_cors import CORS
 from utils import APIException, generate_sitemap
 from admin import setup_admin
-from models import db, User, Favorite, Planets
+from models import db, User, Favorite, Planets, Characters
 #from models import Person
 
 app = Flask(__name__)
@@ -35,13 +35,13 @@ def sitemap():
 
 # hello API
 
-@app.route('/user', methods=['GET'])
-def handle_hello():
+#@app.route('/user', methods=['GET'])
+#def handle_hello():
 
-    response_body = {
-        "msg": "Hello, this is your GET /user response"
-    }
-    return jsonify(response_body)
+ #   response_body = {
+  #      "msg": "Hello, this is your GET /user response"
+   # }
+    #return jsonify(response_body)
 
 
 # Listar todos los usuarios del blog
@@ -50,31 +50,24 @@ def handle_hello():
 def list_users():
     user = User.query.all()
     userList_serialized = [userList.serialize() for userList in user]
-
     return jsonify({'response': userList_serialized})
 
 #listar un solo user
-@app.route('/user/<int:id_user>', methods=['GET'])
-def get_user(id_user):
-    user = User.query.filter_by(id=id_user).first()
-    user = User.query.get(id_user)
+@app.route('/user/<int:id>', methods=['GET'])
+def get_user(id):
+    user = User.query.filter_by(id=id).first()
+    user = User.query.get(id)
     return jsonify(user.serialize()), 200
 
 # Agregar usuarios
 
 @app.route("/user", methods=['POST']) # aquí especificamos que estos endpoints aceptan solicitudes POST y GET.
 def add_user():
-    request_data = request.data
-    data = json.loads(request_data)
-    user.append(data)
-    return jsonify({"msg" : "Usuario creado correctamente"})
-
-# Borrar user
-
-@app.route('/user/<int:id_user>', methods=['DELETE'])
-def delete_user(id_user):
-    user.pop(id_user)
-    return jsonify({"msg" : "Usuario eliminado correctamente"})
+    user = User.query.all()
+    add.user = []     
+    for people in user  :
+        add.user.append(people.serialize())
+    return jsonify(add.user),200
 
 #Listar la información de los favoritos
 
@@ -104,7 +97,51 @@ def get_planets(id_planets):
     return jsonify(planet.serialize()), 200
 
 
+# Agregar Planeta
 
+@app.route("/planets", methods=['POST']) # aquí especificamos que estos endpoints aceptan solicitudes POST y GET.
+def add_planet(id_planets):
+    request_data = request.data
+    data = json.loads(request_data)
+    id_planets.append(data)
+    return jsonify({"msg" : "Usuario creado correctamente"})
+
+
+# Borrar planeta
+
+@app.route('/favorite/planets/<int:planets_id>', methods=['DELETE'])
+def delete_favorite(planets_id):
+    planet = Favorite.query.get(planets_id)
+    Favorite.delete(planet)
+    return jsonify(planet.serialize())
+#######################Characters########################
+
+#Listar la información de todos los Characters
+
+@app.route('/characters', methods=['GET'])
+def get_all_characters():
+    characters = Characters.query.all()
+    characters_serialized = [character.serialize() for character in characters]
+
+    return jsonify({'response':characters_serialized})
+
+#Listar la información de un solo planet
+
+@app.route('/characters/<int:id_characters>', methods=['GET'])
+def get_characters(id_characters):
+    character = Characters.query.filter_by(id=id_characters).first()
+    character = Characters.query.get(id_characters)
+    return jsonify(character.serialize()), 200
+
+
+# Agregar Planeta
+
+@app.route("/characters", methods=['POST']) # aquí especificamos que estos endpoints aceptan solicitudes POST y GET.
+def add_character(id_characters):
+    request_data = request.data
+    data = json.loads(request_data)
+    id_characters.append(data)
+    return jsonify({"msg" : "Usuario creado correctamente"})
 
 # this only runs if `$ python src/main.py` is executed
 
@@ -116,8 +153,3 @@ if __name__ == '__main__':
 
 
 
-   # planet = {}
-   # for planet in planets:
-    #    if item.get(id) == id_planets:
-     #       planet = item
-    #return jsonify(palnet)

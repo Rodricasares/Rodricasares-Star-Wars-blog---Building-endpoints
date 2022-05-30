@@ -18,7 +18,6 @@ class User(db.Model):
         return {
             "id": self.id,
             "username": self.username
-            "planets_id": Planets.query.get(self.planets_id).serialize(),
             # do not serialize the password, its a security breach
         }
 
@@ -26,7 +25,7 @@ class Favorite(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(Integer, ForeignKey('user.id'))
     planets_id = db.Column(Integer, ForeignKey('planets.id'))
-
+    Characters_id = db.Column(Integer, ForeignKey('characters.id'))
     def __repr__(self):
         return '<Favorite %r>' % self.user_id
 
@@ -35,7 +34,10 @@ class Favorite(db.Model):
             "id": self.id,
             "user_id": self.user_id,
             "planets_id": Planets.query.get(self.planets_id).serialize(),
+            "characters_id": Characters.query.get(self.characters_id).serialize(),
         }
+
+
         
 class Planets(db.Model):
     __tablename__ = 'planets'
@@ -64,5 +66,31 @@ class Planets(db.Model):
             "population": self.population,
             "rotation_period": self.rotation_period,
             "orbital_period": self.orbital_period
+          }
+          
+class Characters(db.Model):
+    __tablename__ = 'characters'
+
+    id = Column(Integer, primary_key=True)
+    name = db.Column(db.String(80), nullable=False, unique=True)
+    img = db.Column(db.String(120), nullable=False, unique=True)
+    height = db.Column(db.String(120), nullable=False, unique=True)
+    mass = db.Column(db.String(120), nullable=False, unique=True)
+    birth_year = db.Column(db.String(120), nullable=False, unique=True)
+    gender = db.Column(db.String(120), nullable=False, unique=True)
+    favorites_id = db.relationship('Favorite', backref = 'characters')
+
+    def __repr__(self):
+        return '<Characters %r>' % self.name
+
+    def serialize(self):
+        return {
+            "name": self.name,
+            "img": self.img,
+            "height": self.height,
+            "mass": self.mass,
+            "birth_year": self.birth_year,
+            "gender": self.gender
+            
           }
           
